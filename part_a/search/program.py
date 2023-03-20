@@ -3,6 +3,13 @@
 
 from .utils import render_board
 
+def spread(tup1, tup2):
+    power = tup1[3]
+    action_list = []
+    i = 1
+    while i <= power:
+        action_list.append(((tup1[0]+i*tup2[0])%7,(tup1[1]+i*tup2[1])%7))
+        i+=1
 
 def search(input: dict[tuple, tuple]) -> list[tuple]:
     """
