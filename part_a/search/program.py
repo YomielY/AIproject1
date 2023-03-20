@@ -8,6 +8,7 @@ board = {(6, 3): ("b", 5), (5, 3): ("b", 1), (4, 3): ("r", 1), (3, 3): ("r", 6),
 tuple1 = (6, 3, "b", 5)
 tuple2 = (0, 1)
 
+# 得到行动方向之后spread结果
 def spread(tup1: tuple, tup2: tuple, board: dict[tuple, tuple]):
     power = tup1[3]    # power of the original cell
     coordinates_list = []   # list to store coordinates after spread
@@ -36,6 +37,10 @@ def spread(tup1: tuple, tup2: tuple, board: dict[tuple, tuple]):
             spread_lists.append((coordinate[0], coordinate[1], tup1[2], new_power))
 
     return spread_lists
+
+# 查找cost最合适的spread action -> 6 选 1
+def find_action():
+    return
 
 
 
