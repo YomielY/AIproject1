@@ -1,22 +1,25 @@
 # COMP30024 Artificial Intelligence, Semester 1 2023
 # Project Part A: Single Player Infexion
+from collections import deque
 
 from .utils import render_board
 
-board = {(6, 3): ("b", 5), (5, 3): ("b", 1), (4, 3): ("r", 1), (3, 3): ("r", 6), (6, 4): ("b", 1),
+board1 = {(6, 3): ("b", 5), (5, 3): ("b", 1), (4, 3): ("r", 1), (3, 3): ("r", 6), (6, 4): ("b", 1),
           (6, 5): ("b", 1), (6, 2): ("r", 1)}
 tuple1 = (6, 3, "b", 5)
 tuple2 = (0, 1)
 
-# 得到行动方向之后spread结果
-def spread(tup1: tuple, tup2: tuple, board: dict[tuple, tuple]):
+SIZE_BOARD = 7
+OFFSETS = [(0, 1), (-1, 1), (-1, 0), (0, -1), (1, -1), (1, 0)]
+
+def spread(tup1, tup2, board):
     power = tup1[3]    # power of the original cell
     coordinates_list = []   # list to store coordinates after spread
 
     i = 1
     while i <= power:
         # find the coordinates after spread
-        coordinates_list.append(((tup1[0]+i*tup2[0]) % 7, (tup1[1]+i*tup2[1]) % 7))
+        coordinates_list.append(((tup1[0]+i*tup2[0] + 7) % 7, (tup1[1]+i*tup2[1] + 7) % 7))
         i += 1
 
     spread_dict = {}
@@ -40,32 +43,45 @@ def spread(tup1: tuple, tup2: tuple, board: dict[tuple, tuple]):
     board.pop((tup1[0], tup1[1]))
     return board
 
-# 查找cost最合适的spread action -> 6 选 1
-def heuristic(moveCell: tuple, board: dict[tuple, tuple]):
-    # 找到最近的蓝色 先走
-    for value in board:
-        if value[0] != moveCell[3]:  # 将蓝色坐标筛选
-            for key in board:
-                difference = key - (moveCell[0], moveCell[1])
-                # 寻找达到difference需要最少的步数
-                #if difference >= 4:
+# check the rest number of opposite color cell
+def num_colour(board, color):
+    num_color = 0
+    for i in range(SIZE_BOARD):
+        for j in range(SIZE_BOARD):
+            if board[i][j] & board[i][j][0] == color:
+                num_color += 1
+    return num_color
 
+# check whether all opposite cell are eaten by other cell
+def check_win(board, color):
+    if num_colour(board, color) == 0:
+        return 1
+    return 0
 
+def next_actions(tup1):
+    next_steps = []
+    for r, c in OFFSETS:
+        new_r = (r + tup1[0] + 7) % 7
+        new_c = (c + tup1[1] + 7) % 7
+        next_steps.append((new_r, new_c))
+    return next_steps
 
+class Node:
+    pos = None
+    parent = None
 
+    def _init_(self, pos, parent):
+        self.parent = parent
+        self.pos = pos
 
+        self.g = 0
+        self.h = 0
+        self.f = 0
 
+    def f(self):
+        return self.g + self.h
 
-
-
-
-
-
-
-
-
-
-def search(input: dict[tuple, tuple]) -> list[tuple]:
+def search(input):
     """
     This is the entry point for your submission. The input is a dictionary
     of board cell states, where the keys are tuples of (r, q) coordinates, and
@@ -79,10 +95,16 @@ def search(input: dict[tuple, tuple]) -> list[tuple]:
     # board state in a human-readable format. Try changing the ansi argument 
     # to True to see a colour-coded version (if your terminal supports it).
     print(render_board(input, ansi=False))
-    print(render_board(board))
-    new_board = spread(tuple1, tuple2, board)
+    print(render_board(board1))
+    new_board = spread(tuple1, tuple2, board1)
     print(new_board)
     print(render_board(new_board))
+
+
+
+    next_node = deque()
+    tree = Node()
+
 
 
 
