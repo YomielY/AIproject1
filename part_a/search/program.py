@@ -19,7 +19,7 @@ def spread(tup1: tuple, tup2: tuple, board: dict[tuple, tuple]):
         coordinates_list.append(((tup1[0]+i*tup2[0]) % 7, (tup1[1]+i*tup2[1]) % 7))
         i += 1
 
-    spread_lists = []
+    spread_dict = {}
     # find the power of each cell after spread
     for coordinate in coordinates_list:
         if coordinate in board:
@@ -34,13 +34,34 @@ def spread(tup1: tuple, tup2: tuple, board: dict[tuple, tuple]):
         else:
             new_power = 1
         if new_power != 0:
-            spread_lists.append((coordinate[0], coordinate[1], tup1[2], new_power))
+            spread_dict[(coordinate[0], coordinate[1])] = (tup1[2], new_power)
 
-    return spread_lists
+    board.update(spread_dict)
+    board.pop((tup1[0], tup1[1]))
+    return board
 
 # 查找cost最合适的spread action -> 6 选 1
-def find_action():
-    return
+def heuristic(moveCell: tuple, board: dict[tuple, tuple]):
+    # 找到最近的蓝色 先走
+    for value in board:
+        if value[0] != moveCell[3]:  # 将蓝色坐标筛选
+            for key in board:
+                difference = key - (moveCell[0], moveCell[1])
+                # 寻找达到difference需要最少的步数
+                #if difference >= 4:
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -58,7 +79,13 @@ def search(input: dict[tuple, tuple]) -> list[tuple]:
     # board state in a human-readable format. Try changing the ansi argument 
     # to True to see a colour-coded version (if your terminal supports it).
     print(render_board(input, ansi=False))
-    print(spread(tuple1, tuple2, board))
+    print(render_board(board))
+    new_board = spread(tuple1, tuple2, board)
+    print(new_board)
+    print(render_board(new_board))
+
+
+
 
     # Here we're returning "hardcoded" actions for the given test.csv file.
     # Of course, you'll need to replace this with an actual solution...
